@@ -120,7 +120,10 @@ public class ExibicaoFilmeGUI extends JFrame {
             for (FanThread f : fans) {
                 switch (f.estado) {
                     case AGUARDANDO:
-                        g.setColor(Color.white); // Laranja para aguardando/fila
+                        g.setColor(Color.white);
+                        break;
+                    case AGUARDANDONOCINEMA:
+                        g.setColor(Color.red);
                         break;
                     case ASSISTINDO:
                         // NOVO: Cor oscilante para o estado ASSISTINDO

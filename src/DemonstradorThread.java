@@ -21,15 +21,14 @@ public class DemonstradorThread extends Thread {
                 gui.atualizarEstadoDemonstrador(estado);
 
                 sistema.aguardarCapacidadeTotal();
-
                 sistema.iniciarExibicao();
                 estado = Estado.EXIBINDO;
                 gui.atualizarEstadoDemonstrador(estado);
                 gui.log("Filme começou a ser exibido");
 
 
-                Thread.sleep(tempoExibicao * 1000);
-
+                //Thread.sleep(tempoExibicao * 1000);
+                sistema.sleepWork(tempoExibicao * 1000);
                 gui.log("Filme terminou");
                 sistema.encerrarFilme();
 

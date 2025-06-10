@@ -7,8 +7,6 @@ public class Sistema {
     public final Semaphore semFila;
     public final Semaphore semExibicaoInicia;
     public final Semaphore semFilmeTermina;
-    public final AtomicInteger filmeIniciado = new AtomicInteger(0);
-    private final List<FanThread> filaLote = new ArrayList<>();
     private final Object mutexFila = new Object();
 
     public Sistema(int capacidade) {
@@ -18,22 +16,38 @@ public class Sistema {
         this.semFilmeTermina = new Semaphore(0);
     }
 
-    public void entrarNaFila(FanThread fan) throws InterruptedException {
-        semFila.acquire();
-
-        synchronized (mutexFila) {
-            filaLote.add(fan);
+    public int sleepWork(int durationMs) {
+        if (durationMs <= 0) {
+            return 0;
         }
+
+        long startTime = System.currentTimeMillis();
+        long endTime = startTime + durationMs;
+
+        Random random = new Random();
+        int lastGeneratedNumber = 0;
+
+        while (System.currentTimeMillis() < endTime) {
+            lastGeneratedNumber = random.nextInt(1000);
+        }
+
+        return lastGeneratedNumber;
+    }
+
+    public boolean temVaga() {
+        return semFila.availablePermits() > 0;
+    }
+
+    public void entrarNaFila() throws InterruptedException {
+        semFila.acquire();
     }
 
     public void aguardarCapacidadeTotal() throws InterruptedException {
         while (true) {
-            synchronized (mutexFila) {
-                if (filaLote.size() >= capacidade) {
-                    return;
-                }
+            if(!temVaga()) {
+                sleepWork(1200);
+                return;
             }
-            Thread.sleep(100);
         }
     }
 
@@ -45,10 +59,6 @@ public class Sistema {
         semFilmeTermina.release(capacidade);
 
         semFila.release(capacidade);
-
-        synchronized (mutexFila) {
-            filaLote.clear();
-        }
     }
 
     public void esperarExibicao() throws InterruptedException {

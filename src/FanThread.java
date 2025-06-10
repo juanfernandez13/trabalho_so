@@ -25,7 +25,7 @@ public class FanThread extends Thread {
             else if (y > destinoY) y--;
 
             gui.atualizarEstadoFan(id, estado); // Força repaint da GUI
-            Thread.sleep(5);
+            sistema.sleepWork(5);
         }
     }
 
@@ -37,13 +37,20 @@ public class FanThread extends Thread {
                 estado = Estado.AGUARDANDO;
                 gui.atualizarEstadoFan(id, estado);
                 moverPara(280 - (id % 5) * 25 , 150 + (id / 5) * 25);  // Espaçamento vertical por fã
-                sistema.entrarNaFila(this);
-
+                sistema.entrarNaFila();
+                if(sistema.temVaga()){
+                    moverPara(430 + (id % 5) * 25, 150 + (id / 5) * 25);
+                    estado = Estado.AGUARDANDONOCINEMA;
+                    gui.atualizarEstadoFan(id, estado);
+                }
                 // Esperar o início da exibição - mover para auditório
+                //sistema.sleepWork(500);
+                moverPara(430 + (id % 5) * 25, 150 + (id / 5) * 25);
                 sistema.esperarExibicao();
                 moverPara(430 + (id % 5) * 25, 150 + (id / 5) * 25);  // Posicionar no auditório
                 estado = Estado.ASSISTINDO;
                 gui.atualizarEstadoFan(id, estado);
+
 
                 // Esperar o filme acabar
                 sistema.esperarFimDoFilme();
@@ -55,11 +62,12 @@ public class FanThread extends Thread {
                 estado = Estado.LANCHANDO;
                 gui.atualizarEstadoFan(id, estado);
                 gui.log("Fã " + id + " está lanchando por " + tempoLanche + "s");
-                Thread.sleep(tempoLanche * 1000);
+                sistema.sleepWork(tempoLanche * 1000);
                 estado = Estado.AGUARDANDO;
-                moverPara(770 + (id % 5) * 25, 400);
+                moverPara(770 + (id % 5) * 25, 350);
                 moverPara(80, 350);
                 moverPara(80, 150);
+
                 // Voltar para a fila para novo ciclo
                 gui.atualizarEstadoFan(id, estado);
                 gui.log("Fã " + id + " voltou do lanche");
