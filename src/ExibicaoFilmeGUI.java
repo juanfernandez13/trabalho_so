@@ -61,7 +61,7 @@ public class ExibicaoFilmeGUI extends JFrame {
         addFanButton.addActionListener(e -> {
             int tl = Integer.parseInt(tlField.getText());
             int id = fans.size();
-            FanThread fan = new FanThread(id, tl, this, sistema);
+            FanThread fan = new FanThread(id, tl, this, sistema, Te);
             fans.add(fan);
             fan.start();
             System.out.println("Fan " + id + " adicionado com sucesso!");

@@ -5,15 +5,16 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class Sistema {
     private final int capacidade;
     public final Semaphore semFila;
+    public final Semaphore aguadandoLotacao;
     public final Semaphore semExibicaoInicia;
     public final Semaphore semFilmeTermina;
-    private final Object mutexFila = new Object();
 
     public Sistema(int capacidade) {
         this.capacidade = capacidade;
         this.semFila = new Semaphore(capacidade);
         this.semExibicaoInicia = new Semaphore(0);
         this.semFilmeTermina = new Semaphore(0);
+        this.aguadandoLotacao = new Semaphore(0);
     }
 
     public int sleepWork(int durationMs) {
@@ -40,15 +41,14 @@ public class Sistema {
 
     public void entrarNaFila() throws InterruptedException {
         semFila.acquire();
+        if(!temVaga()) {
+            aguadandoLotacao.release();
+        }
     }
 
     public void aguardarCapacidadeTotal() throws InterruptedException {
-        while (true) {
-            if(!temVaga()) {
-                sleepWork(1200);
-                return;
-            }
-        }
+        aguadandoLotacao.acquire();
+        sleepWork(1200);
     }
 
     public void iniciarExibicao() {

@@ -3,17 +3,19 @@ public class FanThread extends Thread {
     private final int tempoLanche;
     private final ExibicaoFilmeGUI gui;
     private final Sistema sistema;
+    private final int tempoFilme;
 
     public Estado estado = Estado.AGUARDANDO;
 
     public int x = 100;
     public int y = 150;
 
-    public FanThread(int id, int tempoLanche, ExibicaoFilmeGUI gui, Sistema sistema) {
+    public FanThread(int id, int tempoLanche, ExibicaoFilmeGUI gui, Sistema sistema, int tempoFilme) {
         this.id = id;
         this.tempoLanche = tempoLanche;
         this.gui = gui;
         this.sistema = sistema;
+        this.tempoFilme = tempoFilme;
     }
 
     public void moverPara(int destinoX, int destinoY) throws InterruptedException {
@@ -50,6 +52,7 @@ public class FanThread extends Thread {
                 moverPara(430 + (id % 5) * 25, 150 + (id / 5) * 25);  // Posicionar no auditório
                 estado = Estado.ASSISTINDO;
                 gui.atualizarEstadoFan(id, estado);
+                sistema.sleepWork(tempoFilme * 1000);
 
 
                 // Esperar o filme acabar
